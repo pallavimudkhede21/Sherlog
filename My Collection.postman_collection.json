@@ -1,0 +1,93 @@
+{
+  "info": {
+    "_postman_id": "5bfac7a4-eeb2-4749-b8b3-6fb49f0c5fe3",
+    "name": "My Collection",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56277020",
+    "_collection_link": "https://go.postman.co/collection/56277020-5bfac7a4-eeb2-4749-b8b3-6fb49f0c5fe3?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Log-Analyzer- multiLine-logs",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"logs\": \"Exception in thread main\\n\\tat com.demo.App.run(App.java:10)\\n\\tat com.demo.App.main(App.java:5)\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/logs/analyze",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "logs",
+            "analyze"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Log_analyzer - one line log-inputt",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"logs\": \"2026-06-30 ERROR java.lang.NullPointerException at com.demo.UserService.getUser(UserService.java:42) - Cannot invoke getName() because user is null\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/logs/analyze",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "logs",
+            "analyze"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "health-check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/logs/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "logs",
+            "health"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
