@@ -3,9 +3,23 @@
 spring:
   config:
     import: optional:file:.env[.properties]
-
-groq:
-  api:
-    key: ${GROQ_API_KEY}
-    url: https://api.groq.com/openai/v1/chat/completions
-    model: llama-3.1-8b-instant
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lograg
+    username: postgres
+    password: postgres
+  ai:
+    openai:
+      api-key: ${GROQ_API_KEY}
+      base-url: https://api.groq.com/openai/v1
+      chat:
+        options:
+          model: llama-3.1-8b-instant
+          temperature: 0.2
+    model:
+      embedding: transformers   # use the LOCAL embedder, not OpenAI/Groq
+    vectorstore:
+      pgvector:
+        initialize-schema: true       # auto-create the vector_store table + index
+        dimensions: 384               # all-MiniLM-L6-v2 outputs 384-dim vectors
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
