@@ -1,0 +1,52 @@
+[
+  {
+    "errorType": "NullPointerException",
+    "severity": "HIGH",
+    "text": "NullPointerException occurs when code calls a method on a null object, often an entity returned from a repository lookup that found no row. Resolution: null-check the value (or use Optional.orElseThrow) and confirm the database query actually returns a record before dereferencing it."
+  },
+  {
+    "errorType": "ConnectionTimeout",
+    "severity": "CRITICAL",
+    "text": "HikariPool 'Connection is not available, request timed out' means the JDBC connection pool is exhausted under load. Resolution: increase spring.datasource.hikari.maximum-pool-size, ensure connections are closed, and investigate slow or long-running transactions holding connections."
+  },
+  {
+    "errorType": "OutOfMemoryError",
+    "severity": "CRITICAL",
+    "text": "OutOfMemoryError: Java heap space usually comes from loading too much data at once (huge result sets) or unbounded in-memory caches. Resolution: raise the -Xmx heap, page large queries, bound caches with eviction, and capture a heap dump to locate the leak."
+  },
+  {
+    "errorType": "PortInUse",
+    "severity": "MEDIUM",
+    "text": "Application fails to start with 'Web server failed to start. Port 8080 was already in use' (BindException). Another process holds the port. Resolution: stop that process or set server.port to a free port in application.yaml."
+  },
+  {
+    "errorType": "LazyInitializationException",
+    "severity": "HIGH",
+    "text": "LazyInitializationException: could not initialize proxy - no Session. A lazy JPA association is accessed outside an open Hibernate session. Resolution: access it inside a @Transactional method, use a JOIN FETCH query, or map to a DTO projection."
+  },
+  {
+    "errorType": "AuthError",
+    "severity": "HIGH",
+    "text": "Calls to an external API return 401 Unauthorized or 403 Forbidden due to a missing, wrong, or expired credential. Resolution: verify the API key or bearer token, the exact header name (Authorization: Bearer ...), and that the token has not expired."
+  },
+  {
+    "errorType": "DataIntegrityViolation",
+    "severity": "HIGH",
+    "text": "DataIntegrityViolationException on insert or update, often a unique-constraint or not-null violation such as 'duplicate key value violates unique constraint'. Resolution: check for duplicates before insert, validate required fields, and align the entity constraints with the database schema."
+  },
+  {
+    "errorType": "StackOverflowError",
+    "severity": "HIGH",
+    "text": "StackOverflowError is usually caused by unbounded recursion, or by two JPA entities calling each other's toString()/equals() in a cycle (bidirectional relationships with Lombok). Resolution: add a base case to recursion and exclude back-references from toString/equals (e.g. @ToString.Exclude)."
+  },
+  {
+    "errorType": "BeanCreationException",
+    "severity": "CRITICAL",
+    "text": "BeanCreationException or UnsatisfiedDependencyException at startup means Spring could not wire a bean: a missing bean, a circular dependency, or an unresolved @Value placeholder. Resolution: add the missing @Component/@Bean, break the cycle with @Lazy or a redesign, and ensure all properties resolve."
+  },
+  {
+    "errorType": "HttpMessageNotReadable",
+    "severity": "MEDIUM",
+    "text": "HttpMessageNotReadableException 'JSON parse error' means the request body does not match the expected DTO: wrong field type, malformed JSON, or a missing Content-Type: application/json header. Resolution: validate the client payload, set the correct Content-Type, and align DTO field types with the JSON."
+  }
+]

@@ -1,89 +1,127 @@
 {
   "info": {
     "_postman_id": "5bfac7a4-eeb2-4749-b8b3-6fb49f0c5fe3",
-    "name": "My Collection",
-    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "name": "Log Analyzer AI",
+    "description": "Spring Boot + Groq + Spring AI RAG log analyzer.\n\nEndpoints:\n- POST /api/logs/analyze?rag=true|false&severity=LOW|MEDIUM|HIGH|CRITICAL\n- GET  /api/logs/similar?q=...&k=3&severity=...\n- GET  /api/logs/health\n\nThe app must be running on http://localhost:8080.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "56277020",
-    "_collection_link": "https://go.postman.co/collection/56277020-5bfac7a4-eeb2-4749-b8b3-6fb49f0c5fe3?source=collection_link"
+    "_exporter_id": "56277020"
   },
   "item": [
     {
-      "name": "Log-Analyzer- multiLine-logs",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{ \"logs\": \"Exception in thread main\\n\\tat com.demo.App.run(App.java:10)\\n\\tat com.demo.App.main(App.java:5)\" }",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "http://localhost:8080/api/logs/analyze",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8080",
-          "path": [
-            "api",
-            "logs",
-            "analyze"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Log_analyzer - one line log-inputt",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"logs\": \"2026-06-30 ERROR java.lang.NullPointerException at com.demo.UserService.getUser(UserService.java:42) - Cannot invoke getName() because user is null\"\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "http://localhost:8080/api/logs/analyze",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "8080",
-          "path": [
-            "api",
-            "logs",
-            "analyze"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "health-check",
+      "name": "Health check",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
           "raw": "http://localhost:8080/api/logs/health",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["localhost"],
           "port": "8080",
-          "path": [
-            "api",
-            "logs",
-            "health"
+          "path": ["api", "logs", "health"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Analyze - RAG ON",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"logs\": \"2026-06-30 ERROR java.lang.NullPointerException at com.demo.UserService.getUser(UserService.java:42) - Cannot invoke getName() because user is null\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/logs/analyze?rag=true",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "logs", "analyze"],
+          "query": [{ "key": "rag", "value": "true" }]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Analyze - RAG OFF (compare)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"logs\": \"ERROR com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Connection is not available, request timed out after 30000ms during peak traffic.\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/logs/analyze?rag=false",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "logs", "analyze"],
+          "query": [{ "key": "rag", "value": "false" }]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Analyze - RAG filtered to CRITICAL",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"logs\": \"ERROR com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Connection is not available, request timed out after 30000ms during peak traffic.\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/logs/analyze?rag=true&severity=CRITICAL",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "logs", "analyze"],
+          "query": [
+            { "key": "rag", "value": "true" },
+            { "key": "severity", "value": "CRITICAL" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Similar incidents (retrieval)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/logs/similar?q=app hung under load waiting for a database connection&k=3",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "logs", "similar"],
+          "query": [
+            { "key": "q", "value": "app hung under load waiting for a database connection" },
+            { "key": "k", "value": "3" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Similar - filtered to CRITICAL",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/logs/similar?q=service crashed under load&k=5&severity=CRITICAL",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "logs", "similar"],
+          "query": [
+            { "key": "q", "value": "service crashed under load" },
+            { "key": "k", "value": "5" },
+            { "key": "severity", "value": "CRITICAL" }
           ]
         }
       },

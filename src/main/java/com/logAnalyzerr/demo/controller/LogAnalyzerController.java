@@ -9,6 +9,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,30 +24,38 @@ public class LogAnalyzerController {
     private final LogAnalyzerService service;
     private final VectorStore vectorStore;
 
+    /**
+     * @param rag      toggle Retrieval-Augmented Generation (default true).
+     * @param severity optional metadata filter — restrict RAG retrieval to incidents of this severity.
+     */
     @PostMapping("/analyze")
     public ResponseEntity<LogAnalysisResponse> analyze(
             @RequestBody LogAnalysisRequest request,
-            @RequestParam(defaultValue = "true") boolean rag ) {
-        log.info("Received log analysis request (rag={})", rag);
+            @RequestParam(defaultValue = "true") boolean rag,
+            @RequestParam(required = false) String severity ) {
+        log.info("Received log analysis request (rag={}, severity={})", rag, severity);
 
         if(request.getLogs() == null || request.getLogs().isBlank()){
             return  ResponseEntity.badRequest().build();
         }
-        LogAnalysisResponse response = service.analyze(request, rag);
+        LogAnalysisResponse response = service.analyze(request, rag, severity);
         return  ResponseEntity.ok(response);
     }
 
     /**
-     * Demo endpoint: embed the query, then return the most semantically similar
-     * past incidents from pgvector (with their similarity score). Lets us watch
-     * retrieval work before we wire it into the prompt (Step 4).
+     * Embed the query and return the most semantically similar past incidents.
+     * Pass severity to restrict the search to that severity (metadata filter).
      */
     @GetMapping("/similar")
     public ResponseEntity<List<Map<String, Object>>> similar(
             @RequestParam String q,
-            @RequestParam(defaultValue = "3") int k) {
-        List<Document> matches = vectorStore.similaritySearch(
-                SearchRequest.builder().query(q).topK(k).build());
+            @RequestParam(defaultValue = "3") int k,
+            @RequestParam(required = false) String severity) {
+        SearchRequest.Builder search = SearchRequest.builder().query(q).topK(k);
+        if (StringUtils.hasText(severity)) {
+            search = search.filterExpression("severity == '" + severity + "'");
+        }
+        List<Document> matches = vectorStore.similaritySearch(search.build());
         List<Map<String, Object>> out = matches.stream()
                 .map(d -> Map.<String, Object>of(
                         "score", d.getScore(),

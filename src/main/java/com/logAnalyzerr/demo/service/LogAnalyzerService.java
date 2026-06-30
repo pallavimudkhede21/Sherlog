@@ -10,6 +10,7 @@ import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -33,15 +34,19 @@ public class LogAnalyzerService {
     }
 
     public LogAnalysisResponse analyze(LogAnalysisRequest request) {
-        return analyze(request, true);
+        return analyze(request, true, null);
+    }
+
+    public LogAnalysisResponse analyze(LogAnalysisRequest request, boolean useRag) {
+        return analyze(request, useRag, null);
     }
 
     /**
-     * @param useRag when true, retrieve similar past incidents from the vector store
-     *               and inject them into the prompt before the model answers.
-     *               When false, the model sees only the raw log (no grounding).
+     * @param useRag         when true, retrieve similar past incidents and inject them into the prompt.
+     * @param severityFilter when set (e.g. "CRITICAL"), retrieval only considers incidents whose
+     *                       metadata severity matches — metadata-filtered RAG.
      */
-    public LogAnalysisResponse analyze(LogAnalysisRequest request, boolean useRag) {
+    public LogAnalysisResponse analyze(LogAnalysisRequest request, boolean useRag, String severityFilter) {
         try {
             ChatClient.ChatClientRequestSpec spec = chat.prompt()
                     .system(SYSTEM_PROMPT)
@@ -53,8 +58,13 @@ public class LogAnalyzerService {
                                     .build()));
 
             if (useRag) {
+                SearchRequest.Builder search = SearchRequest.builder().topK(3);
+                if (StringUtils.hasText(severityFilter)) {
+                    // pgvector metadata filter — only retrieve incidents with this severity.
+                    search = search.filterExpression("severity == '" + severityFilter + "'");
+                }
                 spec = spec.advisors(QuestionAnswerAdvisor.builder(vectorStore)
-                        .searchRequest(SearchRequest.builder().topK(3).build())
+                        .searchRequest(search.build())
                         .build());
             }
 
