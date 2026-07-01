@@ -13,6 +13,16 @@ knowledge base of past incidents using **RAG** (Retrieval-Augmented Generation).
 
 ---
 
+## Features
+
+- 🧠 **AI root-cause diagnosis** — turns a raw stack trace into a summary, root cause, affected component, severity, and a step-by-step fix.
+- 📚 **RAG (Retrieval-Augmented Generation)** — grounds every answer in a searchable knowledge base of past incidents, so fixes reflect real, proven resolutions.
+- 🔎 **Semantic search with pgvector** — finds similar past errors by *meaning*, not keywords, using a PostgreSQL vector database (HNSW + cosine).
+- 🏠 **Local embeddings** — an in-process ONNX model (`all-MiniLM-L6-v2`) turns text into vectors with no external embedding API and no cost.
+- 🧩 **Structured JSON output** — Spring AI maps the LLM reply straight onto a typed Java object, no brittle parsing.
+- ⚡ **Fast inference** — powered by Groq's OpenAI-compatible API (`llama-3.1-8b-instant`).
+- 🎛️ **Tunable retrieval** — toggle RAG on/off and filter retrieved incidents by severity.
+
 ## Example
 
 **Input** — a raw log:
@@ -109,3 +119,7 @@ Edit it to grow the knowledge base; to reload, run
 ## License
 
 [MIT](LICENSE) © 2026 Pallavi Mudkhede
+
+---
+
+<sub>**Keywords:** AI log analyzer · Retrieval-Augmented Generation (RAG) in Java · Spring AI 2.0 example · Spring Boot 4 · Groq LLM · pgvector · vector search · semantic search · local ONNX embeddings · root cause analysis · structured LLM output · QuestionAnswerAdvisor · Java AI tutorial</sub>
